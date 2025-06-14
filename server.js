@@ -1,4 +1,6 @@
 const express = require("express");
+const User = require("./models/User");
+const bcrypt = require("bcrypt");
 const http = require("http");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -44,15 +46,49 @@ app.get("/", (req, res) => {
 });
 
 // POST login
-app.post("/login", (req, res) => {
-  const { username } = req.body;
-  if (!username || username.trim() === "") {
-    return res.redirect("/");
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+
+  if (!user || !(await user.comparePassword(password))) {
+    return res.redirect("/?error=InvalidCredentials");
   }
 
-  req.session.username = username;
+  req.session.username = user.username;
   res.redirect("/chat.html");
 });
+
+// GET sign-up page (optional)
+app.get("/signup", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/signup.html"));
+});
+
+// POST signup
+app.post("/signup", async (req, res) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.redirect("/signup?error=MissingFields");
+  }
+
+  try {
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res.redirect("/signup?error=UserExists");
+    }
+
+    const user = new User({ username, email, password });
+    await user.save();
+
+    req.session.username = user.username;
+    res.redirect("/index.html");
+
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.redirect("/signup?error=ServerError");
+  }
+});
+
 
 // Socket.IO connection
 io.on("connection", (socket) => {

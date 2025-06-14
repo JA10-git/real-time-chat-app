@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
+  <title>Sign Up</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="header-section">
     <h1 style="font-size: 4rem; font-weight: 800; margin-bottom: 1rem; text-align: center; color: rgb(0, 0, 0); text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Chatroom</h1>
-    <p style="font-size: 1.5rem; font-weight: 500; text-align: center; color: rgba(0, 0, 0, 0.9); max-width: 600px; margin: 0 auto; line-height: 1.4;">Connect with friends and colleagues in real-time. Join our secure chatroom platform for seamless conversations and instant messaging.</p>
+    <p style="font-size: 1.5rem; font-weight: 500; text-align: center; color: rgba(0, 0, 0, 0.9); max-width: 600px; margin: 0 auto; line-height: 1.4;">Create your account to start connecting with friends and colleagues in real-time.</p>
   </div>
   
   <div class="container">
@@ -28,20 +28,22 @@
   }
 </script>
 
-    <h2>Login</h2>
-    <form action="/login" method="POST">
-
+    <h2>Sign Up</h2>
+    <form action="/signup" method="POST">
       <div class="form-group">
-        <input type="text" name="username" placeholder="Enter username" required />
+        <input type="text" name="username" placeholder="Choose a username" required />
       </div>
       <div class="form-group">
-        <input type="password" name="password" placeholder="Enter password" required />
+        <input type="email" name="email" placeholder="Enter your email" required />
       </div>
-      <button type="submit">Login</button>
+      <div class="form-group">
+        <input type="password" name="password" placeholder="Create a password" required />
+      </div>
+      <button type="submit">Create Account</button>
     </form>
     
     <div class="auth-link">
-      <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+      <p>Already have an account? <a href="index.html">Login</a></p>
     </div>
   </div>
 </body>
