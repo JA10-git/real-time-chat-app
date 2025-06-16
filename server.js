@@ -8,6 +8,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 const Message = require("./models/Message");
+const onlineUsers = new Map(); // key: username, value: socket.id
+
 
 dotenv.config();
 const app = express();
@@ -45,6 +47,11 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
+app.get("/privatechat.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/privatechat.html"));
+});
+
+
 // POST login
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -55,7 +62,7 @@ app.post("/login", async (req, res) => {
   }
 
   req.session.username = user.username;
-  res.redirect("/chat.html");
+  res.redirect("/chatmode.html");
 });
 
 // GET sign-up page (optional)
@@ -92,8 +99,24 @@ app.post("/signup", async (req, res) => {
 
 // Socket.IO connection
 io.on("connection", (socket) => {
+
   const session = socket.request.session;
   const username = session.username;
+
+  onlineUsers.set(username, socket.id);
+
+// Send current user list to requester
+socket.emit("user-joined", username); // ✅ send current username to client
+
+socket.on("get-user-list", async () => {
+  const allUsers = await User.find({}, "username").lean();
+  const userList = allUsers.map(u => ({
+    username: u.username,
+    online: onlineUsers.has(u.username)
+  }));
+  socket.emit("user-list", userList);
+});
+
 
   if (!username) return;
 
@@ -102,6 +125,11 @@ io.on("connection", (socket) => {
   socket.on("join-room", (room) => {
     socket.join(room);
   });
+
+  socket.on("disconnect", () => {
+  onlineUsers.delete(username);
+});
+
 
   socket.on("chat-message", async ({ room, message }) => {
     const msg = new Message({ sender: username, content: message, room });

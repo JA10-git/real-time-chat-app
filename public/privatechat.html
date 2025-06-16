@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Select User to Chat</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .user-list {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-list h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .user {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .user.online {
+      font-weight: bold;
+      color: green;
+    }
+
+    .user.offline {
+      color: gray;
+    }
+
+    .user button {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .user button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="user-list">
+    <h2>Select a User to Chat Privately</h2>
+    <div id="users"></div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  const usersContainer = document.getElementById("users");
+  let currentUser = null;
+
+  // ✅ Step 1: Listen for your own username
+  socket.on("user-joined", (username) => {
+    currentUser = username;
+
+    // ✅ Step 2: Once known, ask for user list
+    socket.emit("get-user-list");
+  });
+
+  // ✅ Step 3: Render all users except self
+  socket.on("user-list", (users) => {
+    usersContainer.innerHTML = "";
+
+    if (!currentUser) {
+      console.warn("Current user not set.");
+      return;
+    }
+
+    const visibleUsers = users.filter(user => user.username !== currentUser);
+
+    if (visibleUsers.length === 0) {
+      usersContainer.innerHTML = "<p>No other users available.</p>";
+      return;
+    }
+
+    visibleUsers.forEach(user => {
+      const userEl = document.createElement("div");
+      userEl.classList.add("user", user.online ? "online" : "offline");
+
+      userEl.innerHTML = `
+        <span>${user.username} (${user.online ? "Online" : "Offline"})</span>
+        <button onclick="startChat('${user.username}')">Chat</button>
+      `;
+
+      usersContainer.appendChild(userEl);
+    });
+  });
+
+  function startChat(targetUser) {
+    window.location.href = `chat.html?target=${targetUser}`;
+  }
+</script>
+
+
+</body>
+</html>

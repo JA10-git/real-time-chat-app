@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Chat Mode</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .mode-container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .mode-container h2 {
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      color: #333;
+    }
+
+    .chat-option {
+      display: inline-block;
+      margin: 1rem;
+    }
+
+    .chat-option button {
+      padding: 15px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .chat-option button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="mode-container">
+    <h2>Select Chat Mode</h2>
+    <div class="chat-option">
+      <button onclick="window.location.href='chat.html'">Join Room Chat</button>
+    </div>
+    <div class="chat-option">
+      <button onclick="window.location.href='privatechat.html'">Start Private Chat</button>
+    </div>
+  </div>
+</body>
+</html>
